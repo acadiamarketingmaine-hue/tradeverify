@@ -704,25 +704,71 @@ export default function Home() {
               <span>Simple Pricing</span>
             </div>
             <h2 className="headline-lg mb-6">
-              Pay Per <span className="text-gradient">Qualified</span> Interview
+              Plans That <span className="text-gradient">Scale</span> With You
             </h2>
             <p className="subheadline">
-              No subscriptions. No monthly fees. Only pay when you get a qualified interview with a verified candidate.
+              Simple, transparent pricing. Every plan includes verified candidates, license checks, and our 90-day guarantee.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+          <div className="grid md:grid-cols-3 gap-8 mb-12">
             {[
-              { tier: 'Helper/Apprentice', price: '$50', desc: 'Entry-level and apprentice positions' },
-              { tier: 'Journeyman', price: '$100', desc: 'Licensed journeyman level workers' },
-              { tier: 'Master/Licensed', price: '$150', desc: 'Master licensed professionals' },
-              { tier: 'Specialty', price: '$200', desc: 'Specialized certifications & rare skills' },
+              {
+                tier: 'Starter',
+                price: '$500',
+                period: '/month',
+                desc: 'For small teams getting started',
+                features: ['5 verified interviews/month', 'License verification', 'Basic matching', 'Email support'],
+                highlighted: false
+              },
+              {
+                tier: 'Professional',
+                price: '$1,000',
+                period: '/month',
+                desc: 'For growing companies hiring regularly',
+                features: ['15 verified interviews/month', 'Priority matching', 'Skills video access', 'AI interview recordings', 'Dedicated support'],
+                highlighted: true
+              },
+              {
+                tier: 'Enterprise',
+                price: '$2,000',
+                period: '/month',
+                desc: 'For teams with ongoing hiring needs',
+                features: ['Unlimited interviews', 'Custom integrations', 'Bulk hiring tools', 'Account manager', 'Custom reporting'],
+                highlighted: false
+              },
             ].map((plan, i) => (
-              <div key={i} className="bg-white border-2 border-gray-100 rounded-2xl p-8 text-center card-hover">
-                <div className="text-gray-500 font-medium mb-2">{plan.tier}</div>
-                <div className="text-4xl font-bold mb-2">{plan.price}</div>
-                <div className="text-sm text-gray-400 mb-6">per qualified interview</div>
-                <p className="text-gray-600 text-sm">{plan.desc}</p>
+              <div key={i} className={`relative rounded-2xl p-8 text-center card-hover ${
+                plan.highlighted
+                  ? 'bg-gradient-to-br from-blue-600 to-blue-700 text-white border-2 border-blue-500 scale-105'
+                  : 'bg-white border-2 border-gray-100'
+              }`}>
+                {plan.highlighted && (
+                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-orange-500 text-white text-xs font-bold px-4 py-1 rounded-full">
+                    MOST POPULAR
+                  </div>
+                )}
+                <div className={`font-medium mb-2 ${plan.highlighted ? 'text-blue-200' : 'text-gray-500'}`}>{plan.tier}</div>
+                <div className="flex items-baseline justify-center gap-1 mb-2">
+                  <span className="text-5xl font-bold">{plan.price}</span>
+                  <span className={`text-lg ${plan.highlighted ? 'text-blue-200' : 'text-gray-400'}`}>{plan.period}</span>
+                </div>
+                <p className={`text-sm mb-6 ${plan.highlighted ? 'text-blue-100' : 'text-gray-600'}`}>{plan.desc}</p>
+                <ul className="space-y-3 text-left mb-8">
+                  {plan.features.map((feature, fi) => (
+                    <li key={fi} className={`flex items-center gap-3 text-sm ${plan.highlighted ? 'text-white' : 'text-gray-600'}`}>
+                      <CheckIcon />
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+                <button className={`w-full py-3 rounded-xl font-semibold transition-all ${
+                  plan.highlighted
+                    ? 'bg-white text-blue-600 hover:bg-blue-50'
+                    : 'bg-gray-900 text-white hover:bg-gray-800'
+                }`}>
+                  Get Started
+                </button>
               </div>
             ))}
           </div>
