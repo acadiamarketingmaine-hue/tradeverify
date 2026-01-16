@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 // Icons
 const ShieldCheckIcon = () => (
@@ -123,8 +123,69 @@ const LockIcon = () => (
   </svg>
 )
 
+// Animated Counter Component
+function AnimatedCounter({ target, duration = 2000, suffix = '', isActive }: { target: number; duration?: number; suffix?: string; isActive: boolean }) {
+  const [count, setCount] = useState(0)
+
+  useEffect(() => {
+    if (!isActive) {
+      setCount(0)
+      return
+    }
+
+    let startTime: number
+    let animationFrame: number
+
+    const animate = (timestamp: number) => {
+      if (!startTime) startTime = timestamp
+      const progress = Math.min((timestamp - startTime) / duration, 1)
+
+      setCount(Math.floor(progress * target))
+
+      if (progress < 1) {
+        animationFrame = requestAnimationFrame(animate)
+      }
+    }
+
+    animationFrame = requestAnimationFrame(animate)
+    return () => cancelAnimationFrame(animationFrame)
+  }, [target, duration, isActive])
+
+  return <span>{count}{suffix}</span>
+}
+
 export default function Home() {
   const [activeTab, setActiveTab] = useState<'employers' | 'workers'>('employers')
+  const [journeyActive, setJourneyActive] = useState(false)
+  const [activeStep, setActiveStep] = useState(0)
+  const journeyRef = useRef<HTMLDivElement>(null)
+
+  // Intersection Observer for journey section
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && !journeyActive) {
+            setJourneyActive(true)
+            // Progressively activate steps
+            const steps = [0, 1, 2, 3, 4]
+            steps.forEach((step, index) => {
+              setTimeout(() => {
+                setActiveStep(step + 1)
+              }, index * 800)
+            })
+          }
+        })
+      },
+      { threshold: 0.3 }
+    )
+
+    if (journeyRef.current) {
+      observer.observe(journeyRef.current)
+    }
+
+    return () => observer.disconnect()
+  }, [journeyActive])
 
   return (
     <main className="overflow-hidden">
@@ -274,7 +335,7 @@ export default function Home() {
       </section>
 
       {/* The Hiring Journey - Animated Timeline */}
-      <section className="section section-dark relative overflow-hidden">
+      <section ref={journeyRef} className="section section-dark relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-gray-900 via-gray-900 to-gray-800" />
 
         <div className="container-custom relative">
@@ -291,10 +352,13 @@ export default function Home() {
           {/* Animated Timeline */}
           <div className="relative">
             {/* Progress Line Background */}
-            <div className="absolute top-16 left-0 right-0 h-1 bg-gray-700 hidden md:block" />
+            <div className="absolute top-16 left-[10%] right-[10%] h-1 bg-gray-700 hidden md:block" />
 
-            {/* Animated Progress Line */}
-            <div className="absolute top-16 left-0 h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-orange-500 hidden md:block animate-journey-line" style={{ width: '80%' }} />
+            {/* Animated Progress Line - grows based on activeStep */}
+            <div
+              className="absolute top-16 left-[10%] h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-orange-500 hidden md:block transition-all duration-700 ease-out"
+              style={{ width: `${Math.min(activeStep * 20, 80)}%` }}
+            />
 
             {/* Journey Steps */}
             <div className="grid grid-cols-1 md:grid-cols-5 gap-8 md:gap-4">
@@ -303,81 +367,107 @@ export default function Home() {
                   icon: <SearchIcon />,
                   title: 'Search',
                   description: 'Post your job or browse verified candidates',
-                  active: true
+                  stat: 250,
+                  statSuffix: '+',
+                  statLabel: 'Jobs posted daily'
                 },
                 {
                   icon: <GlobeIcon />,
                   title: 'Match',
                   description: 'AI matches skills, certs, and preferences',
-                  active: true
+                  stat: 47,
+                  statSuffix: '',
+                  statLabel: 'Avg. matches per job'
                 },
                 {
                   icon: <ShieldCheckIcon />,
                   title: 'Verify',
                   description: 'Licenses and backgrounds auto-checked',
-                  active: true
+                  stat: 100,
+                  statSuffix: '%',
+                  statLabel: 'Credentials verified'
                 },
                 {
                   icon: <PhoneIcon />,
                   title: 'Interview',
                   description: 'AI-recorded calls ensure quality',
-                  active: false
+                  stat: 5,
+                  statSuffix: '',
+                  statLabel: 'Avg. interviews to hire'
                 },
                 {
                   icon: <TrendingUpIcon />,
                   title: 'Hire',
                   description: 'Guaranteed placement, 90-day protection',
-                  active: false
+                  stat: 98,
+                  statSuffix: '%',
+                  statLabel: 'Success rate'
                 },
-              ].map((step, i) => (
-                <div key={i} className="flex flex-col items-center text-center group">
-                  {/* Icon Circle */}
-                  <div
-                    className={`relative w-32 h-32 rounded-3xl flex items-center justify-center mb-6 transition-all duration-500 ${
-                      step.active
-                        ? 'bg-gradient-to-br from-blue-500 to-purple-600 shadow-lg shadow-blue-500/30 scale-110'
-                        : 'bg-gray-800 border border-gray-700'
-                    }`}
-                    style={{ animationDelay: `${i * 200}ms` }}
-                  >
-                    <div className={`w-10 h-10 ${step.active ? 'text-white' : 'text-gray-500'}`}>
-                      {step.icon}
+              ].map((step, i) => {
+                const isActive = i < activeStep
+                return (
+                  <div key={i} className="flex flex-col items-center text-center group">
+                    {/* Icon Circle */}
+                    <div
+                      className={`relative w-28 h-28 rounded-2xl flex items-center justify-center mb-4 transition-all duration-500 ${
+                        isActive
+                          ? 'bg-gradient-to-br from-blue-500 to-purple-600 shadow-lg shadow-purple-500/30 scale-105'
+                          : 'bg-gray-800 border border-gray-700'
+                      }`}
+                    >
+                      <div className={`w-8 h-8 transition-colors duration-500 ${isActive ? 'text-white' : 'text-gray-500'}`}>
+                        {step.icon}
+                      </div>
+                      {/* Pulse ring for active */}
+                      {isActive && i === activeStep - 1 && (
+                        <div className="absolute inset-0 rounded-2xl bg-purple-500/30 animate-ping" style={{ animationDuration: '1.5s' }} />
+                      )}
                     </div>
-                    {/* Pulse ring for active */}
-                    {step.active && (
-                      <div className="absolute inset-0 rounded-3xl bg-blue-500/20 animate-ping" style={{ animationDuration: '2s' }} />
-                    )}
+
+                    {/* Title */}
+                    <h3 className={`text-lg font-bold mb-1 transition-colors duration-500 ${isActive ? 'text-white' : 'text-gray-500'}`}>
+                      {step.title}
+                    </h3>
+
+                    {/* Description */}
+                    <p className={`text-xs max-w-[160px] mb-3 transition-colors duration-500 ${isActive ? 'text-gray-300' : 'text-gray-600'}`}>
+                      {step.description}
+                    </p>
+
+                    {/* Animated Counter */}
+                    <div className={`transition-all duration-500 ${isActive ? 'opacity-100' : 'opacity-0'}`}>
+                      <div className={`text-2xl font-bold ${isActive ? 'text-purple-400' : 'text-gray-600'}`}>
+                        <AnimatedCounter target={step.stat} suffix={step.statSuffix} isActive={isActive} duration={1500} />
+                      </div>
+                      <div className="text-xs text-gray-500">{step.statLabel}</div>
+                    </div>
                   </div>
-
-                  {/* Title */}
-                  <h3 className={`text-xl font-bold mb-2 ${step.active ? 'text-white' : 'text-gray-500'}`}>
-                    {step.title}
-                  </h3>
-
-                  {/* Description */}
-                  <p className={`text-sm max-w-[180px] ${step.active ? 'text-gray-300' : 'text-gray-600'}`}>
-                    {step.description}
-                  </p>
-                </div>
-              ))}
+                )
+              })}
             </div>
           </div>
 
           {/* Example Card */}
-          <div className="mt-20 max-w-4xl mx-auto">
+          <div className={`mt-20 max-w-4xl mx-auto transition-all duration-700 ${activeStep >= 5 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
             <div className="bg-gray-800/50 backdrop-blur border border-gray-700 rounded-2xl p-8">
               <div className="text-sm text-blue-400 font-semibold mb-4">Example: HVAC Company in Phoenix</div>
               <div className="grid md:grid-cols-3 gap-6 text-center">
                 <div>
-                  <div className="text-3xl font-bold text-white mb-1">47</div>
+                  <div className="text-3xl font-bold text-white mb-1">
+                    <AnimatedCounter target={47} isActive={activeStep >= 5} />
+                  </div>
                   <div className="text-gray-400 text-sm">Verified candidates matched</div>
                 </div>
                 <div>
-                  <div className="text-3xl font-bold text-green-400 mb-1">8 days</div>
+                  <div className="text-3xl font-bold text-green-400 mb-1">
+                    <AnimatedCounter target={8} suffix=" days" isActive={activeStep >= 5} />
+                  </div>
                   <div className="text-gray-400 text-sm">From posting to hire</div>
                 </div>
                 <div>
-                  <div className="text-3xl font-bold text-orange-400 mb-1">2 years</div>
+                  <div className="text-3xl font-bold text-orange-400 mb-1">
+                    <AnimatedCounter target={2} suffix=" years" isActive={activeStep >= 5} />
+                  </div>
                   <div className="text-gray-400 text-sm">Still employed (and promoted)</div>
                 </div>
               </div>
