@@ -93,6 +93,36 @@ const PlayIcon = () => (
   </svg>
 )
 
+const SearchIcon = () => (
+  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+  </svg>
+)
+
+const GlobeIcon = () => (
+  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+  </svg>
+)
+
+const HandshakeIcon = () => (
+  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M7 11l5-5m0 0l5 5m-5-5v12" />
+  </svg>
+)
+
+const TrendingUpIcon = () => (
+  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+  </svg>
+)
+
+const LockIcon = () => (
+  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+  </svg>
+)
+
 export default function Home() {
   const [activeTab, setActiveTab] = useState<'employers' | 'workers'>('employers')
 
@@ -229,16 +259,129 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             {[
-              { number: '50K+', label: 'Verified Workers' },
-              { number: '10K+', label: 'Companies Hiring' },
+              { number: '23%', label: 'Higher Pay vs. Industry Avg' },
+              { number: '47%', label: 'Longer Employee Retention' },
               { number: '98%', label: 'Placement Rate' },
-              { number: '$85K', label: 'Avg. Salary' },
+              { number: '14 days', label: 'Avg. Time to Hire' },
             ].map((stat, i) => (
               <div key={i} className="animate-slide-up" style={{ animationDelay: `${i * 100}ms` }}>
                 <div className="stat-number text-gradient">{stat.number}</div>
                 <div className="stat-label">{stat.label}</div>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* The Hiring Journey - Animated Timeline */}
+      <section className="section section-dark relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-gray-900 via-gray-900 to-gray-800" />
+
+        <div className="container-custom relative">
+          <div className="text-center max-w-3xl mx-auto mb-20">
+            <span className="text-blue-400 font-semibold text-sm uppercase tracking-widest mb-4 block">— The Hiring Journey —</span>
+            <h2 className="headline-lg text-white mb-6">
+              From Search to <span className="text-gradient-accent">Success</span>
+            </h2>
+            <p className="text-xl text-gray-400">
+              Every great hire follows a path. We&apos;ve built the system to make each step seamless.
+            </p>
+          </div>
+
+          {/* Animated Timeline */}
+          <div className="relative">
+            {/* Progress Line Background */}
+            <div className="absolute top-16 left-0 right-0 h-1 bg-gray-700 hidden md:block" />
+
+            {/* Animated Progress Line */}
+            <div className="absolute top-16 left-0 h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-orange-500 hidden md:block animate-journey-line" style={{ width: '80%' }} />
+
+            {/* Journey Steps */}
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-8 md:gap-4">
+              {[
+                {
+                  icon: <SearchIcon />,
+                  title: 'Search',
+                  description: 'Post your job or browse verified candidates',
+                  active: true
+                },
+                {
+                  icon: <GlobeIcon />,
+                  title: 'Match',
+                  description: 'AI matches skills, certs, and preferences',
+                  active: true
+                },
+                {
+                  icon: <ShieldCheckIcon />,
+                  title: 'Verify',
+                  description: 'Licenses and backgrounds auto-checked',
+                  active: true
+                },
+                {
+                  icon: <PhoneIcon />,
+                  title: 'Interview',
+                  description: 'AI-recorded calls ensure quality',
+                  active: false
+                },
+                {
+                  icon: <TrendingUpIcon />,
+                  title: 'Hire',
+                  description: 'Guaranteed placement, 90-day protection',
+                  active: false
+                },
+              ].map((step, i) => (
+                <div key={i} className="flex flex-col items-center text-center group">
+                  {/* Icon Circle */}
+                  <div
+                    className={`relative w-32 h-32 rounded-3xl flex items-center justify-center mb-6 transition-all duration-500 ${
+                      step.active
+                        ? 'bg-gradient-to-br from-blue-500 to-purple-600 shadow-lg shadow-blue-500/30 scale-110'
+                        : 'bg-gray-800 border border-gray-700'
+                    }`}
+                    style={{ animationDelay: `${i * 200}ms` }}
+                  >
+                    <div className={`w-10 h-10 ${step.active ? 'text-white' : 'text-gray-500'}`}>
+                      {step.icon}
+                    </div>
+                    {/* Pulse ring for active */}
+                    {step.active && (
+                      <div className="absolute inset-0 rounded-3xl bg-blue-500/20 animate-ping" style={{ animationDuration: '2s' }} />
+                    )}
+                  </div>
+
+                  {/* Title */}
+                  <h3 className={`text-xl font-bold mb-2 ${step.active ? 'text-white' : 'text-gray-500'}`}>
+                    {step.title}
+                  </h3>
+
+                  {/* Description */}
+                  <p className={`text-sm max-w-[180px] ${step.active ? 'text-gray-300' : 'text-gray-600'}`}>
+                    {step.description}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Example Card */}
+          <div className="mt-20 max-w-4xl mx-auto">
+            <div className="bg-gray-800/50 backdrop-blur border border-gray-700 rounded-2xl p-8">
+              <div className="text-sm text-blue-400 font-semibold mb-4">Example: HVAC Company in Phoenix</div>
+              <div className="grid md:grid-cols-3 gap-6 text-center">
+                <div>
+                  <div className="text-3xl font-bold text-white mb-1">47</div>
+                  <div className="text-gray-400 text-sm">Verified candidates matched</div>
+                </div>
+                <div>
+                  <div className="text-3xl font-bold text-green-400 mb-1">8 days</div>
+                  <div className="text-gray-400 text-sm">From posting to hire</div>
+                </div>
+                <div>
+                  <div className="text-3xl font-bold text-orange-400 mb-1">2 years</div>
+                  <div className="text-gray-400 text-sm">Still employed (and promoted)</div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -451,18 +594,22 @@ export default function Home() {
               </div>
               <div className="relative">
                 <div className="bg-white/5 backdrop-blur rounded-3xl p-8 border border-white/10">
-                  <h4 className="text-white font-semibold mb-6">Job Match Preview</h4>
+                  <h4 className="text-white font-semibold mb-2">Job Match Preview</h4>
+                  <p className="text-gray-400 text-sm mb-6">Company names hidden until you apply</p>
                   <div className="space-y-4">
                     {[
-                      { company: 'Summit Electric', role: 'Commercial Electrician', pay: '$42-52/hr', rating: 4.8 },
-                      { company: 'Metro HVAC', role: 'Service Technician', pay: '$38-48/hr', rating: 4.6 },
-                      { company: 'Pioneer Plumbing', role: 'Journeyman Plumber', pay: '$40-50/hr', rating: 4.9 },
+                      { location: 'Portland Metro Area', role: 'Commercial Electrician', pay: '$42-52/hr', rating: 4.8, benefits: 'Full Benefits' },
+                      { location: 'Greater Seattle', role: 'Service Technician', pay: '$38-48/hr', rating: 4.6, benefits: '401k + Health' },
+                      { location: 'Denver Region', role: 'Journeyman Plumber', pay: '$40-50/hr', rating: 4.9, benefits: 'Union Shop' },
                     ].map((job, i) => (
                       <div key={i} className="bg-white/10 rounded-xl p-4">
                         <div className="flex justify-between items-start mb-2">
                           <div>
                             <div className="text-white font-semibold">{job.role}</div>
-                            <div className="text-gray-400 text-sm">{job.company}</div>
+                            <div className="text-gray-400 text-sm flex items-center gap-2">
+                              <LockIcon />
+                              <span>{job.location}</span>
+                            </div>
                           </div>
                           <div className="flex items-center gap-1 text-yellow-400">
                             <StarIcon />
@@ -471,10 +618,15 @@ export default function Home() {
                         </div>
                         <div className="flex justify-between items-center">
                           <span className="text-green-400 font-semibold">{job.pay}</span>
-                          <span className="text-xs bg-blue-500/20 text-blue-300 px-2 py-1 rounded">95% Match</span>
+                          <span className="text-xs bg-green-500/20 text-green-300 px-2 py-1 rounded">{job.benefits}</span>
                         </div>
                       </div>
                     ))}
+                  </div>
+                  <div className="mt-6 p-4 bg-blue-500/10 border border-blue-500/20 rounded-xl">
+                    <p className="text-blue-300 text-sm text-center">
+                      <span className="font-semibold">Your info stays private too</span> — employers see your skills, not your name until you accept
+                    </p>
                   </div>
                 </div>
               </div>
